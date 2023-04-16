@@ -8,18 +8,18 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 const LoginScreen = () => {
   const navigation = useNavigation();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('1@gmail.com');
+  const [password, setPassword] = useState('12345678');
 
-  const handleLogin = () => {
-    firebase.auth().signInWithEmailAndPassword(email, password)
-      .then(() => {
-        navigation.dispatch('NowPlayingScreen');
-      })
-      .catch(error => {
-        alert(error.message);
-      });
-  };
+  // const handleLogin = () => {
+  //   firebase.auth().signInWithEmailAndPassword(email, password)
+  //     .then(() => {
+  //       navigation.dispatch('NowPlayingScreen');
+  //     })
+  //     .catch(error => {
+  //       alert(error.message);
+  //     });
+  // };
 
   const onSignInClicked = async() => {
     try{

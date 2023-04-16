@@ -15,6 +15,7 @@ import LogoutScreen from './screens/LogoutScreen';
 import LoginScreen from './screens/LoginScreen'
 import SignupScreen from './screens/SignUpScreen'
 import { onAuthStateChanged } from 'firebase/auth';
+import MovieDetailsScreen from './screens/MovieDetailsScreen';
 
 
 const Tab = createBottomTabNavigator();
@@ -26,6 +27,7 @@ function AuthStack() {
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Signup" component={SignupScreen} />
       <Stack.Screen name='NowPlayingScreen' component={NowPlayingScreen}/>
+      <Stack.Screen name='MovieDetails' component={MovieDetailsScreen}/>
     </Stack.Navigator>
   );
 }
@@ -69,16 +71,13 @@ export default function App() {
           } else if (route.name === 'Logout') {
             iconName = focused ? 'log-out' : 'log-out-outline';
           }
-    
-                     // You can return any component that you like here!
-            return <Ionicons name={iconName} size={size} color={color} />;
+          return <Ionicons name={iconName} size={size} color={color} />;
         },
       })}
       tabBarOptions={{
         activeTintColor: 'tomato',
         inactiveTintColor: 'gray',
       }}>
-        {/* <Tab.Screen name="Home" component={HomeScreen} /> */}
         <Tab.Screen name="Now Playing" component={NowPlayingScreen} />
         <Tab.Screen name="My Purchases" component={MyPurchasesScreen} />
         {isAuthenticated && <Tab.Screen name="Logout" component={LogoutScreen} />} 

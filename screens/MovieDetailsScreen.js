@@ -2,8 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 
 const MovieDetailsScreen = ({ route }) => {
-  const { title, releaseYear, poster, overview } = route.params;
-
+  const { title, releaseYear, poster, overview } = {title: "23",releaseYear : 2323,poster: "23",overview: "232"}
   return (
     <View style={styles.container}>
       <Image style={styles.poster} source={{ uri: poster }} />
