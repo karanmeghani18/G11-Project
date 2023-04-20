@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { auth } from '../config/firebase-config';
 import { useFocusEffect } from '@react-navigation/native';
@@ -18,36 +18,37 @@ const MovieDetailsScreen = ({ route }) => {
       if(auth.currentUser === null){
         setLoggedIn(false)
       }else{
-        console.log('My Purchases screen is focused');
+        console.log('Detals screen is focused');
         setLoggedIn(true)
-
-
       }
 
       return () => {
-        console.log('My Purchases screen is unfocused');
+        console.log('Details screen is unfocused');
       };
     }, [])
   );
-  // useEffect(() => {
-  //   if (userFromAuth != null){
-  //     setLoggedIn(true)
-  //   }
-  // }, [userFromAuth]);
+
 
   const handleBuyTickets = () => {
     if (loggedIn) {
-      navigation.navigate('BuyTickets', {
+      navigation.navigate('Buy Tickets', {
         title: title,
         releaseYear: releaseYear,
         poster: poster,
       });
     } else {
-      navigation.navigate('Login');
+      navigation.navigate('Login',{
+        title: title,
+        releaseYear: releaseYear,
+        poster: poster,
+        overview: overview,
+        rating: rating
+    });
     }
   };
 
   return (
+    <ScrollView>
     <View style={styles.container}>
       <Image style={styles.backdrop} source={{ uri: poster }} />
       <View style={styles.detailsContainer}>
@@ -60,21 +61,30 @@ const MovieDetailsScreen = ({ route }) => {
         </View>
         <Text style={styles.releaseYear}>{releaseYear}</Text>
         <Text style={styles.overview}>{overview}</Text>
-        {loggedIn && (
-        <TouchableOpacity style={styles.buyButton} onPress={handleBuyTickets} >
-          <Text style={styles.buyButtonText}>BUY TICKETS</Text>
-        </TouchableOpacity>
-        )}
-        {!loggedIn && (
-<TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate('Login', {
-  returnScreen: 'MovieDetails'
-})}>
-  <Text style={styles.loginButtonText}>LOGIN TO BUY TICKETS</Text>
+
+         { (!loggedIn &&
+        <Text style={{alignSelf: 'center', color:'red'}}>Login to use this feature</Text>
+  )}
+<TouchableOpacity  disabled={!loggedIn} style={[styles.Button, !loggedIn && styles.disabledButton]} onPress={handleBuyTickets} >
+  <Text style={styles.ButtonText}>BUY TICKETS</Text>
 </TouchableOpacity>
 
-        )}
+        
+<TouchableOpacity style={[styles.loginButton, !loggedIn && styles.Button]} disabled = {loggedIn} onPress={() =>  
+      navigation.navigate('Login',{
+          title: title,
+          releaseYear: releaseYear,
+          poster: poster,
+          overview: overview,
+          rating: rating
+      })}>
+  <Text style={styles.ButtonText}>LOGIN TO BUY TICKETS</Text>
+</TouchableOpacity>
+
+        
       </View>
     </View>
+    </ScrollView>
   );
 };
 
@@ -125,14 +135,17 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 20,
   },
-  buyButton: {
+  Button: {
     backgroundColor: '#3f51b5',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
     marginBottom: 10,
   },
-  buyButtonText: {
+  disabledButton: {
+    backgroundColor: '#ccc',
+  },
+  ButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',

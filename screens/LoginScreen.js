@@ -2,34 +2,36 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { auth } from "../config/firebase-config";
-import NowPlayingScreen from './NowPlayingScreen';
-import HomeScreen from './HomeScreen';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 
 const LoginScreen = ({route}) => {
+
   const navigation = useNavigation();
-
-  const [email, setEmail] = useState('1@gmail.com');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('12345678');
-
+  const { title, releaseYear, poster, overview, rating} = route.params;     
 
   const onSignInClicked = async() => {
     try{
       const userCredentials = await signInWithEmailAndPassword(auth, email, password)
-      const returnScreen = route.params?.returnScreen || null ;
-      if (returnScreen){
-        navigation.goBack()
+      
+       if(route.params != null){
+        navigation.navigate('Movie Details',{
+          title: title,
+          releaseYear: releaseYear,
+          poster: poster,
+          overview: overview,
+          rating: rating
+      })
+      console.log("going to details")
       }else{
-        navigation.navigate('HomeScreen');
+        navigation.goBack()
       }
+
 
     }catch(err){
       Alert.alert(`Error occured ${err}`)
     }
-  }
-
-  onSkipClicked = () => {
-    navigation.navigate('HomeScreen');
   }
 
   return (
@@ -54,11 +56,8 @@ const LoginScreen = ({route}) => {
       <TouchableOpacity style={styles.button} onPress={onSignInClicked} >
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+      <TouchableOpacity onPress={() => navigation.navigate('Sign Up')}>
         <Text style={styles.signupText}>Don't have an account? Signup</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate("HomeScreen")}>
-        <Text style={styles.signupText}>Skip</Text>
       </TouchableOpacity>
     </View>
   );
@@ -87,20 +86,20 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   button: {
-    backgroundColor: '#1a73e8',
+    backgroundColor: '#3f51b5',
     padding: 10,
-    borderRadius: 4,
-    marginTop: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 10,
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
-    textAlign: 'center',
   },
   signupText: {
     marginTop: 20,
-    color: '#1a73e8',
+    color: '#3f51b5',
     fontSize: 16,
     textDecorationLine: 'underline',
   },

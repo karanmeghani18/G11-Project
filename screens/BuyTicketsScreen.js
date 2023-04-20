@@ -3,12 +3,15 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 import { collection, addDoc, updateDoc, deleteDoc, getDoc, doc } from "firebase/firestore";
 import { db } from '../config/firebase-config'
 import { auth } from '../config/firebase-config';
+import { useNavigation } from '@react-navigation/native';
+
 
 const TAX_RATE = 0.13;
 const TICKET_PRICE = 12;
 
-const BuyTicketsScreen = ({  route, navigation  }) => {
+const BuyTicketsScreen = ({  route  }) => {
 
+  const navigation = useNavigation();
   const { title, releaseYear, poster} = route.params;
 
   const [firstName, setFirstName] = useState('');
@@ -32,7 +35,7 @@ try {
   const subCollectionRef = collection(db, "Users",auth.currentUser.uid, "Purchases");
   await addDoc(subCollectionRef,purchaseData)
   alert('Purchase successful!');
-  navigation.navigate('HomeScreen');
+  navigation.navigate('Now Playing');
 }
 catch(error){
   console.error(error)
@@ -124,7 +127,8 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginBottom: 20,
+    alignSelf: 'center'
   },
   inputContainer: {
     marginBottom: 16,
@@ -134,20 +138,29 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   input: {
+    width: '100%',
+    height: 40,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    fontSize: 16,
+    paddingHorizontal: 10,
+    marginBottom: 10,
   },
   ticketQuantityContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    alignSelf: 'center',
+    borderColor: '#3f51b5',
+    borderWidth: 1,
+    padding: 12,
   },
   quantityButton: {
     fontSize: 24,
     paddingHorizontal: 8,
+    backgroundColor:'#3f51b5',
+    borderWidth: 1,
+    borderWidth: 1,
+    color: '#fff'
   },
   ticketQuantity: {
     fontSize: 18,
@@ -155,11 +168,19 @@ const styles = StyleSheet.create({
   },
   orderSummary: {
     marginBottom: 16,
+    
   },
   purchaseButton: {
-    backgroundColor: '#007AFF',
-    borderRadius: 4,
-    paddingHorizontal: 16,
+    backgroundColor: '#3f51b5',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  purchaseText:{
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   }
 })
 export default BuyTicketsScreen;

@@ -26,15 +26,15 @@ const SignUpScreen = ({navigation, route}) => {
             const collectionRef = collection(db, "Users");
             const insertedDoc = await addDoc(collectionRef, newUserDoc);
             Alert.alert(`Success`,`Account created succesfully!`)
-            navigation.navigate('HomeScreen')
+            navigation.navigate('Now Playing')
         } catch(err){
             Alert.alert(`Error occured ${err}`)
         }
     }
 
     return(
-        <View>
-
+        <View style={styles.container}>
+            <Text style={styles.title}>Sign Up</Text>
             <TextInput 
                 style={styles.inputStyle}
                 placeholder="Enter Username"
@@ -65,24 +65,39 @@ const SignUpScreen = ({navigation, route}) => {
 }
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 20,
+        backgroundColor: '#fff',
+      },
     inputStyle : {
-        height: 50,
-        margin: 10,
-        padding: 5,
-        borderColor: 'orangered',
-        borderWidth: 1,
+        width: '100%',
+    height: 40,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    paddingHorizontal: 10,
+    marginBottom: 10,
     },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 20,
+      },
     buttonStyle: {
-        height: 50,
-        margin: 10,
-        padding: 5,
-        backgroundColor:'orangered',
-        justifyContent:'center',
-        alignItems:'center',
+            backgroundColor: '#3f51b5',
+            padding: 10,
+            borderRadius: 5,
+            alignItems: 'center',
+            marginBottom: 10,
+          
     },
     buttonTextStyle: {
+        color: '#fff',
+        fontSize: 16,
         fontWeight: 'bold',
-        color:'#fff',
     }
 });
 

@@ -3,7 +3,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { StyleSheet, View, Text, FlatList, Button, TouchableOpacity } from 'react-native';
 import { db } from '../config/firebase-config';
 import { collection, getDocs } from 'firebase/firestore';
-
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { auth } from '../config/firebase-config';
 
 const MyPurchasesScreen = ({  navigation }) => {
@@ -51,9 +51,12 @@ const MyPurchasesScreen = ({  navigation }) => {
 
   const renderItem = ({ item }) => (
     <View style={styles.purchaseItem}>
+      <Ionicons name="videocam-outline" style={{alignSelf: 'center'}}  size={32} color={'#3f51b5'} />
+      <View style={{margin: 12}}>
       <Text style={styles.movieTitle}>{item.movieName}</Text>
       <Text style={styles.purchaseQuantity}>Num Ticketsd: {item.tickets}</Text>
       <Text style={styles.purchasePrice}>Total Paid: ${item.totalPaid}</Text>
+      </View>
     </View>
   );
 
@@ -66,16 +69,19 @@ const MyPurchasesScreen = ({  navigation }) => {
           keyExtractor={item => item.id}
         />
       ) : (
-        <Text>No purchases found</Text>
+        <Text style={styles.message}>No purchases found</Text>
         
       )
       }
 
 {isUnaunthenticated && (
-          <Button
+          <TouchableOpacity
+          style={styles.button}
             title="Login"
             onPress={() => navigation.navigate('Login')}
-          />
+          >
+            <Text style= {styles.buttonText}>Login</Text>
+          </TouchableOpacity>
         )}
     </View>
   );
@@ -86,9 +92,11 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: '#fff',
+    
   },
   purchaseItem: {
     padding: 10,
+    flexDirection: 'row',
     marginBottom: 10,
     backgroundColor: '#f7f7f7',
     borderRadius: 5,
@@ -109,6 +117,25 @@ const styles = StyleSheet.create({
   },
   purchasePrice: {
     fontSize: 14,
+  },
+  button: {
+    backgroundColor: '#3f51b5',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  message:{
+    alignSelf: 'center',
+    margin: 20,
+    fontSize: 20,
+    fontWeight: 'bold',
+
   },
 });
 

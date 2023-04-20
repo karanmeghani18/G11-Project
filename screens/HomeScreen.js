@@ -16,15 +16,13 @@ const HomeScreen = () => {
 const [isAuthenticated, setIsAuthenticated] = useState(false)
 
     useEffect(() => {
-      if(!auth.currentUser){
-        setIsAuthenticated(false)
-      }
         // check if user is authenticated here
         const listener = onAuthStateChanged(auth, (userFromAuth) => {
           if (userFromAuth != null){
             setIsAuthenticated(true)
           }else{
             setIsAuthenticated(false)
+            console.log("Logged in user is null!")
           }
         });
         return listener; 
@@ -48,7 +46,7 @@ const [isAuthenticated, setIsAuthenticated] = useState(false)
             inactiveTintColor: 'gray',
           })}>
             <Tab.Screen name="Now Playing" component={NowPlayingScreen} />
-            <Tab.Screen name="My Purchases" component ={MyPurchasesScreen} />
+            <Tab.Screen name="My Purchases"component ={MyPurchasesScreen} />
             {isAuthenticated && <Tab.Screen name="Logout" component={LogoutScreen} />} 
           </Tab.Navigator>
       );    

@@ -4,10 +4,10 @@ import { NavigationContainer,useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MovieDetailsScreen from './MovieDetailsScreen'
 
-const NowPlayingScreen = ({navigation, route}) => {
+const NowPlayingScreen = ({ route}) => {
     const [movies, setMovies] = useState([]);
     const Stack = createNativeStackNavigator();
-
+  const navigation = useNavigation();
     useEffect(() => {
       const fetchData = async () => {
         const apiURL = `https://api.themoviedb.org/3/movie/now_playing?api_key=1114f529253eb1e5f738a2cca3fb1c14&language=en-US&page=1&region=CA`;
@@ -28,7 +28,7 @@ const NowPlayingScreen = ({navigation, route}) => {
         <TouchableOpacity
       style={styles.movieContainer}
       onPress={() =>
-        navigation.navigate('MovieDetails',{
+        navigation.navigate('Movie Details',{
           title: item.title,
           releaseYear: item.release_date.split('-')[0],
           poster: `https://image.tmdb.org/t/p/w500${item.backdrop_path}`,
@@ -42,8 +42,10 @@ const NowPlayingScreen = ({navigation, route}) => {
           }}
           style={styles.poster}
         />
+        <View style={styles.details}>
         <Text style={styles.title}>{item.title}</Text>
         <Text style={styles.releaseDate}>{item.release_date}</Text>
+        </View>
         </TouchableOpacity>
       </View>
     );
@@ -63,32 +65,36 @@ const NowPlayingScreen = ({navigation, route}) => {
 
   const styles = StyleSheet.create({
     container: {
-      flex: 1,
+      // flex: 1,
       backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
+      // alignItems: 'center',
+      // justifyContent: 'center',
     },
     movieContainer: {
-      width: '90%',
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginVertical: 10,
+    flexDirection: 'row',
+    // margin: 3,
+    padding: 5,
+    maxWidth: '100%',
     },
     poster: {
-      width: '100%',
-      height: 200,
+      width: 120,
+      height: 120,
       resizeMode: 'contain',
       borderRadius: 10,
+    },
+    details:{
+      flexShrink:1,
+      maxWidth:'100%',
+      margin: 2
     },
     title: {
       fontSize: 18,
       fontWeight: 'bold',
-      marginVertical: 10,
+     
     },
     releaseDate: {
       fontSize: 16,
       color: '#888',
-      marginBottom: 10,
     },
   });
   
