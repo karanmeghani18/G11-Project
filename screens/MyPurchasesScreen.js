@@ -1,26 +1,59 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, FlatList } from 'react-native';
+import React, { useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { StyleSheet, View, Text, FlatList, Button, TouchableOpacity } from 'react-native';
+import { db } from '../config/firebase-config';
+import { collection, getDocs } from 'firebase/firestore';
 
-const MyPurchasesScreen = () => {
+import { auth } from '../config/firebase-config';
+
+const MyPurchasesScreen = ({  navigation }) => {
 
   const [purchases, setPurchases] = useState([]);
+  const [isEmpty, setIsEmpty] = useState(false);
+  const [isUnaunthenticated, setisUnaunthenticated] = useState(false)
 
-  useEffect(() => {
-    // fetch user's purchases from backend
-    const fetchPurchases = async () => {
-      const response = await fetch('https://example.com/api/purchases');
-      const data = await response.json();
-      setPurchases(data);
+  useFocusEffect(
+    React.useCallback(() => {
+      if(auth.currentUser === null){
+        setisUnaunthenticated(true)
+      }else{
+        fetchData();
+        console.log('My Purchases screen is focused');
+        setisUnaunthenticated(false)
+
+      }
+
+      return () => {
+        setPurchases([])
+        console.log('My Purchases screen is unfocused');
+      };
+    }, [])
+  );
+
+  const fetchData = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "Users", auth.currentUser.uid, "Purchases"));
+      let purchases = [];
+      querySnapshot.forEach((doc) => {
+        const purchaseData = doc.data();
+        purchases.push(purchaseData);
+      });
+      setPurchases(purchases);
+      if (purchases.length === 0) {
+        setIsEmpty(true);
+      }
+
+    } catch (error) {
+      console.error(error);
     }
-    fetchPurchases();
-  }, []);
+
+  };
 
   const renderItem = ({ item }) => (
     <View style={styles.purchaseItem}>
-      <Text style={styles.movieTitle}>{item.movieTitle}</Text>
-      <Text style={styles.purchaseDate}>Purchased on: {item.purchaseDate}</Text>
-      <Text style={styles.purchaseQuantity}>Quantity: {item.quantity}</Text>
-      <Text style={styles.purchasePrice}>Total price: ${item.totalPrice}</Text>
+      <Text style={styles.movieTitle}>{item.movieName}</Text>
+      <Text style={styles.purchaseQuantity}>Num Ticketsd: {item.tickets}</Text>
+      <Text style={styles.purchasePrice}>Total Paid: ${item.totalPaid}</Text>
     </View>
   );
 
@@ -34,7 +67,16 @@ const MyPurchasesScreen = () => {
         />
       ) : (
         <Text>No purchases found</Text>
-      )}
+        
+      )
+      }
+
+{isUnaunthenticated && (
+          <Button
+            title="Login"
+            onPress={() => navigation.navigate('Login')}
+          />
+        )}
     </View>
   );
 }

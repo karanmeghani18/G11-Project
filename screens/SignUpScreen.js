@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { View, Text, TextInput, Pressable, StyleSheet, Alert} from "react-native";
-import { auth } from "../config/firebase-config";
+import { auth, db } from "../config/firebase-config";
+import { collection, addDoc } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+
+
 // import { async } from "firebase/util";
 
 const SignUpScreen = ({navigation, route}) => {
@@ -10,12 +15,18 @@ const SignUpScreen = ({navigation, route}) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
+
     // event handlers
     const onCreateAccountPressed = async() => {
         try{
             const userCredentials = await createUserWithEmailAndPassword(auth, username, password)
-            console.log(`account created succesfullt ${userCredentials}`)
+            const newUserDoc = {
+                email: username
+            }
+            const collectionRef = collection(db, "Users");
+            const insertedDoc = await addDoc(collectionRef, newUserDoc);
             Alert.alert(`Success`,`Account created succesfully!`)
+            navigation.navigate('HomeScreen')
         } catch(err){
             Alert.alert(`Error occured ${err}`)
         }

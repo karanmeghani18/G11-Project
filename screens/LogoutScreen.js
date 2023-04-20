@@ -9,7 +9,7 @@ const LogoutScreen = ({ navigation }) => {
     // ...
     try{
       await signOut(auth);
-      Alert.alert("Log Out succesfull")
+      
       
     }catch(err){
       Alert.alert(`Error logging out ${err}`)

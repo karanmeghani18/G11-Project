@@ -3,34 +3,33 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import { useNavigation } from '@react-navigation/native';
 import { auth } from "../config/firebase-config";
 import NowPlayingScreen from './NowPlayingScreen';
+import HomeScreen from './HomeScreen';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 
-const LoginScreen = () => {
+const LoginScreen = ({route}) => {
   const navigation = useNavigation();
 
   const [email, setEmail] = useState('1@gmail.com');
   const [password, setPassword] = useState('12345678');
 
-  // const handleLogin = () => {
-  //   firebase.auth().signInWithEmailAndPassword(email, password)
-  //     .then(() => {
-  //       navigation.dispatch('NowPlayingScreen');
-  //     })
-  //     .catch(error => {
-  //       alert(error.message);
-  //     });
-  // };
 
   const onSignInClicked = async() => {
     try{
       const userCredentials = await signInWithEmailAndPassword(auth, email, password)
-      console.log(`Login Succesful! ${JSON.stringify(userCredentials.email)}`)
-      Alert.alert(`Login Succesful!`)
-      // navigation.navigate('NowPlayingScreen');
+      const returnScreen = route.params?.returnScreen || null ;
+      if (returnScreen){
+        navigation.goBack()
+      }else{
+        navigation.navigate('HomeScreen');
+      }
 
     }catch(err){
       Alert.alert(`Error occured ${err}`)
     }
+  }
+
+  onSkipClicked = () => {
+    navigation.navigate('HomeScreen');
   }
 
   return (
@@ -57,6 +56,9 @@ const LoginScreen = () => {
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
         <Text style={styles.signupText}>Don't have an account? Signup</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate("HomeScreen")}>
+        <Text style={styles.signupText}>Skip</Text>
       </TouchableOpacity>
     </View>
   );

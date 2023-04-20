@@ -1,14 +1,69 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { collection, addDoc, updateDoc, deleteDoc, getDoc, doc } from "firebase/firestore";
+import { db } from '../config/firebase-config'
+import { auth } from '../config/firebase-config';
 
-const BuyTicketsScreen = () => {
+const TAX_RATE = 0.13;
+const TICKET_PRICE = 12;
+
+const BuyTicketsScreen = ({  route, navigation  }) => {
+
+  const { title, releaseYear, poster} = route.params;
+
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [ticketQuantity, setTicketQuantity] = useState(1);
+  const [loggedInUser, setLoggedInUser] = useState(auth.currentUser);
+  const [email,setEmail] = useState(loggedInUser.email)
+  const [ticketQuantity, setTicketQuantity] = useState(0);
+  const [purchaseId, setPurchaseId] = useState();
 
-  const handlePurchase = () => {
-    // handle purchase logic
+  const handlePurchase = async () => {
+
+    const purchaseData = {
+      userId: auth.currentUser.uid,
+      movieName: title,
+      name: `${firstName} ${lastName}`,
+      tickets: ticketQuantity,
+      totalPaid: (ticketQuantity * TICKET_PRICE * (1 + TAX_RATE)).toFixed(2),
+      
+    };
+try {
+  const subCollectionRef = collection(db, "Users",auth.currentUser.uid, "Purchases");
+  await addDoc(subCollectionRef,purchaseData)
+  alert('Purchase successful!');
+  navigation.navigate('HomeScreen');
+}
+catch(error){
+  console.error(error)
+  alert(error)
+}
+
+  };
+
+  const handleChangeTicketQuantity = (delta) => {
+    const newQuantity = ticketQuantity + delta;
+    if (newQuantity >= 0) {
+      setTicketQuantity(newQuantity);
+    }
+  };
+
+  const renderOrderSummary = () => {
+    if (ticketQuantity === 0) return null;
+
+    const subtotal = ticketQuantity * TICKET_PRICE;
+    const tax = subtotal * TAX_RATE;
+    const total = subtotal + tax;
+
+    return (
+      <View style={styles.orderSummary}>
+        <Text>Movie: {title}</Text>
+        <Text>Tickets: {ticketQuantity}</Text>
+        <Text>Subtotal: ${subtotal.toFixed(2)}</Text>
+        <Text>Tax: ${tax.toFixed(2)}</Text>
+        <Text>Total: ${total.toFixed(2)}</Text>
+      </View>
+    );
   };
 
   return (
@@ -41,14 +96,22 @@ const BuyTicketsScreen = () => {
       </View>
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Number of Tickets</Text>
-        <TextInput
-          style={styles.input}
-          value={ticketQuantity.toString()}
-          onChangeText={text => setTicketQuantity(parseInt(text))}
-          keyboardType="numeric"
-        />
+        <View style={styles.ticketQuantityContainer}>
+          <TouchableOpacity onPress={() => handleChangeTicketQuantity(-1)}>
+            <Text style={styles.quantityButton}>-</Text>
+          </TouchableOpacity>
+          <Text style={styles.ticketQuantity}>{ticketQuantity}</Text>
+          <TouchableOpacity onPress={() => handleChangeTicketQuantity(1)}>
+            <Text style={styles.quantityButton}>+</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      <Button title="Purchase" onPress={handlePurchase} />
+      {renderOrderSummary()}
+      {ticketQuantity > 0 && (
+        <TouchableOpacity style={styles.purchaseButton} onPress={handlePurchase}>
+          <Text style={styles.purchaseText}>CONFIRM PURCHASE</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -78,6 +141,25 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     fontSize: 16,
   },
-});
-
+  ticketQuantityContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  quantityButton: {
+    fontSize: 24,
+    paddingHorizontal: 8,
+  },
+  ticketQuantity: {
+    fontSize: 18,
+    paddingHorizontal: 8,
+  },
+  orderSummary: {
+    marginBottom: 16,
+  },
+  purchaseButton: {
+    backgroundColor: '#007AFF',
+    borderRadius: 4,
+    paddingHorizontal: 16,
+  }
+})
 export default BuyTicketsScreen;
